@@ -12,6 +12,7 @@ bool pulse = false;
 // speaker related declarations
 int half_note = 2;
 int pitch = NOTE_C4;
+int speaker = 11;
 boolean soundon = false;
 
 // off button settings
@@ -76,7 +77,7 @@ void play(boolean soundon, boolean pulse, boolean led_on){
 
     if(soundon)
     {
-      tone(9, pitch, noteDuration);
+      tone(speaker, pitch, noteDuration);
     }
     // to distinguish the notes, set a minimum time between them.
 
@@ -94,7 +95,7 @@ void play(boolean soundon, boolean pulse, boolean led_on){
 }
 
 boolean debounce(boolean last) {
-  boolean current = digitalRead(button);
+  bool current = digitalRead(button);
   if (last != current) {
     delay(5);
     current = digitalRead(button);
