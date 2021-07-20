@@ -81,8 +81,7 @@ bool play(boolean soundon, boolean pulse, boolean led_on){
 
     int noteDuration = 1000 / half_note;
 
-    if(soundon)
-    {
+
     
     // to distinguish the notes, set a minimum time between them.
 
@@ -104,7 +103,7 @@ bool play(boolean soundon, boolean pulse, boolean led_on){
 
     noTone(8);
 
-  }
+  
   return led_on;
 }}
 
