@@ -1,5 +1,7 @@
 #include "pitches.h"
 
+unsigned long previousMillisPlay=0;
+
 // photoresistor (colour sensor stub) 
 int vreader = A0;
 double light = 0;
@@ -60,14 +62,12 @@ void loop() {
   play(soundon, pulse, led_on);
   // Only applicable for MODE 2 & 3
   // Controls LED flashing
-  led_on = !led_on;
 }
 
 void play(boolean soundon, boolean pulse, boolean led_on){
+  unsigned long currentMillis = millis();
   if(pulse)
   {
-    digitalWrite(led, led_on);
-
     // to calculate the note duration, take one second divided by the note type.
 
     //e.g. quarter note = 1000 / 4, eighth note = 1000/8, etc.
@@ -83,8 +83,12 @@ void play(boolean soundon, boolean pulse, boolean led_on){
     // the note's duration + 30% seems to work well:
 
     int pauseBetweenNotes = noteDuration * 1.30;
-
-    delay(pauseBetweenNotes);
+    
+    if ((unsigned long)(currentMillis - previousMillisPlay) >= pauseBetweenNotes) {
+      led_on = !led_on;
+      digitalWrite(led, led_on);
+      previousMillisPlay = currentMillis;
+    }
 
     // stop the tone playing:
 
@@ -102,9 +106,3 @@ boolean debounce(boolean last) {
   return current;
   
 }
-
-
-
-  
-
-  
