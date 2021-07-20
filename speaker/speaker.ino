@@ -56,19 +56,25 @@ void loop() {
   if(lastButton == LOW && currentButton == HIGH) {
       soundon = false;
       pulse = false;
+      led_on = false;
       digitalWrite(led, false);
   }
   lastButton = currentButton;
   // Execute mode actions configured above
-  play(soundon, pulse, led_on);
+
+  led_on = play(soundon, pulse, led_on);
+
   // Only applicable for MODE 2 & 3
   // Controls LED flashing
 }
 
-void play(boolean soundon, boolean pulse, boolean led_on){
+
+bool play(boolean soundon, boolean pulse, boolean led_on){
   unsigned long currentMillis = millis();
   if(pulse)
   {
+    digitalWrite(led, led_on);
+
     // to calculate the note duration, take one second divided by the note type.
 
     //e.g. quarter note = 1000 / 4, eighth note = 1000/8, etc.
@@ -77,8 +83,7 @@ void play(boolean soundon, boolean pulse, boolean led_on){
 
     if(soundon)
     {
-      tone(speaker, pitch, noteDuration);
-    }
+    
     // to distinguish the notes, set a minimum time between them.
 
     // the note's duration + 30% seems to work well:
@@ -87,7 +92,11 @@ void play(boolean soundon, boolean pulse, boolean led_on){
     
     if ((unsigned long)(currentMillis - previousMillisPlay) >= pauseBetweenNotes) {
       led_on = !led_on;
-      digitalWrite(led, led_on);
+      if(soundon)
+    {
+      tone(speaker, pitch, noteDuration);
+    }
+
       previousMillisPlay = currentMillis;
     }
 
@@ -96,7 +105,9 @@ void play(boolean soundon, boolean pulse, boolean led_on){
     noTone(8);
 
   }
-}
+  return led_on;
+}}
+
 
 boolean debounce(boolean last) {
   bool current = digitalRead(button);
