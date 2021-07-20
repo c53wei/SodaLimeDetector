@@ -5,7 +5,7 @@ int vreader = A0;
 double light = 0;
 
 // flashing LED related settings
-int led = 4;
+int led = 10;
 bool led_on = false;
 bool pulse = false;
 
