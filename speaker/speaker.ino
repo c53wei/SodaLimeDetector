@@ -1,5 +1,7 @@
 #include "pitches.h"
 
+unsigned long previousMillisPlay=0;
+
 // photoresistor (colour sensor stub) 
 int vreader = A0;
 double light = 0;
@@ -54,17 +56,21 @@ void loop() {
   if(lastButton == LOW && currentButton == HIGH) {
       soundon = false;
       pulse = false;
+      led_on = false;
       digitalWrite(led, false);
   }
   lastButton = currentButton;
   // Execute mode actions configured above
-  play(soundon, pulse, led_on);
+
+  led_on = play(soundon, pulse, led_on);
+
   // Only applicable for MODE 2 & 3
   // Controls LED flashing
-  led_on = !led_on;
 }
 
-void play(boolean soundon, boolean pulse, boolean led_on){
+
+bool play(boolean soundon, boolean pulse, boolean led_on){
+  unsigned long currentMillis = millis();
   if(pulse)
   {
     digitalWrite(led, led_on);
@@ -77,22 +83,31 @@ void play(boolean soundon, boolean pulse, boolean led_on){
 
     if(soundon)
     {
-      tone(speaker, pitch, noteDuration);
-    }
+    
     // to distinguish the notes, set a minimum time between them.
 
     // the note's duration + 30% seems to work well:
 
     int pauseBetweenNotes = noteDuration * 1.30;
+    
+    if ((unsigned long)(currentMillis - previousMillisPlay) >= pauseBetweenNotes) {
+      led_on = !led_on;
+      if(soundon)
+    {
+      tone(speaker, pitch, noteDuration);
+    }
 
-    delay(pauseBetweenNotes);
+      previousMillisPlay = currentMillis;
+    }
 
     // stop the tone playing:
 
     noTone(8);
 
   }
-}
+  return led_on;
+}}
+
 
 boolean debounce(boolean last) {
   bool current = digitalRead(button);
@@ -103,9 +118,3 @@ boolean debounce(boolean last) {
   return current;
   
 }
-
-
-
-  
-
-  
