@@ -1,10 +1,5 @@
 #include "pitches.h"
 
-// notes in the melody:
-int melody[] = {
-  NOTE_C4, NOTE_C4, NOTE_C4, NOTE_C4, NOTE_C4, NOTE_C4, NOTE_C4, NOTE_C4, NOTE_C4
-};
-
 // note durations: 4 = quarter note, 8 = eighth note, etc.:
 int noteDurations[] = {
 
@@ -21,6 +16,7 @@ int vreader = A0;
 double light = 0;
 double brightness = 0;
 bool pulse = false;
+bool flash = true;
 
 void setup() {
   pinMode(led, OUTPUT);
@@ -57,7 +53,8 @@ void loop() {
       digitalWrite(led, false);
   }
   lastButton = currentButton;
-  play(soundon, pulse);
+  play(soundon, pulse, flash);
+  flash = !flash;
 }
 
 boolean debounce(boolean last) {
@@ -70,38 +67,33 @@ boolean debounce(boolean last) {
   
 }
 
-void play(boolean soundon, boolean pulse){
+void play(boolean soundon, boolean pulse, boolean flash){
   if(pulse)
   {
-    boolean flash = true;
-    for (int thisNote = 0; thisNote < 8; thisNote++) {
+    digitalWrite(led, flash);
 
-      digitalWrite(led, flash);
+    // to calculate the note duration, take one second divided by the note type.
 
-      // to calculate the note duration, take one second divided by the note type.
-  
-      //e.g. quarter note = 1000 / 4, eighth note = 1000/8, etc.
-  
-      int noteDuration = 1000 / noteDurations[thisNote];
-  
-      if(soundon)
-      {
-        tone(9, melody[thisNote], noteDuration);
-      }
-      // to distinguish the notes, set a minimum time between them.
-  
-      // the note's duration + 30% seems to work well:
-  
-      int pauseBetweenNotes = noteDuration * 1.30;
-  
-      delay(pauseBetweenNotes);
-  
-      // stop the tone playing:
-  
-      noTone(8);
+    //e.g. quarter note = 1000 / 4, eighth note = 1000/8, etc.
 
-      flash = !flash;
-  }
+    int noteDuration = 1000 / 4;
+
+    if(soundon)
+    {
+      tone(9, NOTE_C4, 4);
+    }
+    // to distinguish the notes, set a minimum time between them.
+
+    // the note's duration + 30% seems to work well:
+
+    int pauseBetweenNotes = noteDuration * 1.30;
+
+    delay(pauseBetweenNotes);
+
+    // stop the tone playing:
+
+    noTone(8);
+
   }
 }
   
