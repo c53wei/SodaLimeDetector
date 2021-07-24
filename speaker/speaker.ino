@@ -55,8 +55,6 @@ void loop() {
   cur_light2 = analogRead(vreader2);
   cur_light3 = analogRead(vreader3);
  
-  
-  
   light1_purple =  colour_detector(abs(cur_light1-normal_light1));
   light2_purple = colour_detector(abs(cur_light2-normal_light2));
   light3_purple = colour_detector(abs(cur_light3-normal_light3));
@@ -64,21 +62,7 @@ void loop() {
   
   if(current_serial - previous_serial > 1000)
   {
-    Serial.print(cur_light1);
-    Serial.print('\t');
-    Serial.print(cur_light2);
-    Serial.print('\t');
-    Serial.print(cur_light3);
-    Serial.println();
-    
-    Serial.print(light1_purple);
-    Serial.print('\t');
-    Serial.print(light2_purple);
-    Serial.print('\t');
-    Serial.print(light3_purple);
-    Serial.println();
-
-    previous_serial = current_serial;
+    print_results_sensor(current_serial);
   }
   
 
@@ -92,7 +76,7 @@ void loop() {
   if(light2_purple)
   {
     pulse = true;
-    digitalWrite(led, true);
+
   }
   // MODE 3: 100 % Depletion --> Flash LED & alarm  
   if(light3_purple)
@@ -171,4 +155,22 @@ bool debounce(boolean last) {
 bool colour_detector(double light) {
   // Return true if reading is purple
   return light > purple;
+}
+
+bool print_results_sensor(long current_serial) {
+  Serial.print(cur_light1);
+    Serial.print('\t');
+    Serial.print(cur_light2);
+    Serial.print('\t');
+    Serial.print(cur_light3);
+    Serial.println();
+    
+    Serial.print(light1_purple);
+    Serial.print('\t');
+    Serial.print(light2_purple);
+    Serial.print('\t');
+    Serial.print(light3_purple);
+    Serial.println();
+
+    previous_serial = current_serial;
 }
