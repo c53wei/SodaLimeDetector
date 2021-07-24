@@ -109,9 +109,9 @@ void loop() {
   redFrequency = pulseIn(sensorOut, LOW);
   
    // Printing the RED (R) value
-  Serial.print("R = ");
-  Serial.print(redFrequency);
-  delay(100);
+//  Serial.print("R = ");
+//  Serial.print(redFrequency);
+//  delay(100);
   
   // Setting GREEN (G) filtered photodiodes to be read
   digitalWrite(S2,HIGH);
@@ -121,9 +121,9 @@ void loop() {
   greenFrequency = pulseIn(sensorOut, LOW);
   
   // Printing the GREEN (G) value  
-  Serial.print(" G = ");
-  Serial.print(greenFrequency);
-  delay(100);
+//  Serial.print(" G = ");
+//  Serial.print(greenFrequency);
+//  delay(100);
  
   // Setting BLUE (B) filtered photodiodes to be read
   digitalWrite(S2,LOW);
@@ -133,36 +133,36 @@ void loop() {
   blueFrequency = pulseIn(sensorOut, LOW);
   
   // Printing the BLUE (B) value 
-  Serial.print(" B = ");
-  Serial.println(blueFrequency);
+//  Serial.print(" B = ");
+//  Serial.println(blueFrequency);
   
   light3_purple = colour_detector(setupred, setupgreen, setupblue, redFrequency, greenFrequency, blueFrequency);
-  if (colour_detector(setupred, setupgreen, setupblue, redFrequency, greenFrequency, blueFrequency)) 
-  {
-    Serial.println("PURPLE");
-  }
-  
+//  if (colour_detector(setupred, setupgreen, setupblue, redFrequency, greenFrequency, blueFrequency)) 
+//  {
+//    Serial.println("PURPLE");
+//  }
+//  
   if(current_serial - previous_serial > 1000)
   {
     print_results_sensor(current_serial);
   }
   
   // MODE 1: 1/2 Depletion --> Turn LED on
-//  if(light1_purple)
-//  {
-//    digitalWrite(led, true);
-//  }
-//  // MODE 2: 2/3 depletion --> Flash LED
-//  if(light2_purple)
-//  {
-//    pulse = true;
-//  }
-//  // MODE 3: 100 % Depletion --> Flash LED & alarm  
-//  if(light3_purple)
-//  {
-//    pulse = true;
-//    soundon = true;
-//  }
+  if(light1_purple)
+  {
+    digitalWrite(led, true);
+  }
+  // MODE 2: 2/3 depletion --> Flash LED
+  if(light2_purple)
+  {
+    pulse = true;
+  }
+  // MODE 3: 100 % Depletion --> Flash LED & alarm  
+  if(light3_purple)
+  {
+    pulse = true;
+    soundon = true;
+  }
   // Debounce button
   currentButton = debounce(lastButton);
   // Revert to MODE 0: Everything off if button pressed
