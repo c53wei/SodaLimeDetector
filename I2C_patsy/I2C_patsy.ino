@@ -17,14 +17,22 @@
 // Define Slave answer size
 #define ANSWERSIZE 5
 
-#define S0 4
-#define S1 5
-#define S2 6
-#define S3 7
+#define S0 9
+#define S1 10
+#define S2 11
+#define S3 12
 #define sensorOut 8
+
+#define Sz 7
+#define Sx 6
+#define Sy 5
+#define Si 4
+#define sensoro 3
  
 // Define string with response to Master
 String answer = "0";
+String answer1 = "0";
+String a = "";
 
 int redFrequency = 0;
 int greenFrequency = 0;
@@ -34,8 +42,13 @@ int setupred = 0;
 int setupgreen = 0;
 int setupblue = 0;
 
-boolean purple = false;
-int val = 1;
+int redFrequency1 = 0;
+int greenFrequency1 = 0;
+int blueFrequency1 = 0;
+
+int setupred1 = 0;
+int setupgreen1 = 0;
+int setupblue1 = 0;
 
 void setup() {
  
@@ -55,6 +68,34 @@ void setup() {
   setupred = pulseIn(sensorOut, LOW);
   setupgreen = pulseIn(sensorOut, LOW);
   setupblue = pulseIn(sensorOut, LOW);
+
+  setupred1 = pulseIn(sensoro, LOW);
+  setupgreen1 = pulseIn(sensoro, LOW);
+  setupblue1 = pulseIn(sensoro, LOW);
+
+  pinMode(S0, OUTPUT);
+  pinMode(S1, OUTPUT);
+  pinMode(S2, OUTPUT);
+  pinMode(S3, OUTPUT);
+  
+  // Setting the sensorOut as an input
+  pinMode(sensorOut, INPUT);
+
+  digitalWrite(S0,HIGH);
+  digitalWrite(S1, HIGH);
+  digitalWrite(S2, HIGH);
+
+  pinMode(Sz, OUTPUT);
+  pinMode(Sx, OUTPUT);
+  pinMode(Sy, OUTPUT);
+  pinMode(Si, OUTPUT);
+  
+  // Setting the sensorOut as an input
+  pinMode(sensoro, INPUT);
+
+  digitalWrite(Sz,HIGH);
+  digitalWrite(Sx, HIGH);
+  digitalWrite(Sy, HIGH);
 }
  
 void receiveEvent() {
@@ -65,30 +106,33 @@ void receiveEvent() {
   }
   
   // Print to Serial Monitor
-  Serial.println("Receive event");
+  //Serial.println("Receive event");
 }
  
 void requestEvent() {
  
   // Setup byte variable in the correct size
+
+  a = answer + answer1;
+  
   byte response[ANSWERSIZE];
   
   // Format answer as array
   for (byte i=0;i<ANSWERSIZE;i++) {
-    response[i] = (byte)answer.charAt(i);
+    response[i] = (byte)a.charAt(i);
   }
   
   // Send response back to Master
   Wire.write(response, sizeof(response));
   
   // Print to Serial Monitor
-  Serial.println("Request event");
+  //Serial.println("Request event");
 }
  
 void loop() {
  
   // Time delay in loop
-  delay(50);
+  delay(250);
 
   redFrequency = pulseIn(sensorOut, LOW);
 
@@ -96,11 +140,14 @@ void loop() {
 
   blueFrequency = pulseIn(sensorOut, LOW);
 
-  //Serial.print(redFrequency);
+  Serial.print(" R = ");
+  Serial.println(redFrequency);
 
-  //Serial.print(greenFrequency);
+  Serial.print(" G = ");
+  Serial.println(greenFrequency);
 
-  //Serial.println(blueFrequency);
+  Serial.print(" B = ");
+  Serial.println(blueFrequency);
 
   if (colour_detector(setupred, setupgreen, setupblue, redFrequency, greenFrequency, blueFrequency)) 
   {
@@ -109,6 +156,32 @@ void loop() {
   else 
   {
     answer = "0";
+  }
+
+  Serial.println(answer);
+  redFrequency1 = pulseIn(sensoro, LOW);
+
+  greenFrequency1 = pulseIn(sensoro, LOW);
+
+  blueFrequency1 = pulseIn(sensoro, LOW);
+
+
+  //Serial.print(" R = ");
+  //Serial.println(redFrequency1);
+
+  //Serial.print(" G = ");
+  //Serial.println(greenFrequency1);
+
+  //Serial.print(" B = ");
+  //Serial.println(blueFrequency1);
+
+  if (colour_detector(setupred1, setupgreen1, setupblue1, redFrequency1, greenFrequency1, blueFrequency1)) 
+  {
+    answer1 = "1";
+  }
+  else 
+  {
+    answer1 = "0";
   }
 
   

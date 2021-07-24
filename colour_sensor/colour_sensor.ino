@@ -1,10 +1,10 @@
 #include <foo.h>
 
 // TCS230 or TCS3200 pins wiring to Arduino
-#define S0 4
-#define S1 5
-#define S2 6
-#define S3 7
+#define S0 9
+#define S1 10
+#define S2 11
+#define S3 12
 #define sensorOut 8
 
 // Stores frequency read by the photodiodes
