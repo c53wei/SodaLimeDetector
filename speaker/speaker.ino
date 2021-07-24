@@ -1,18 +1,26 @@
 #include "pitches.h"
 
+// Timer controllor for sound playing
 unsigned long previousMillisPlay=0;
+// Timer controller for serial display
+unsigned long previous_serial = 0;
 
 // photoresistor (colour sensor stub) 
-int vreader1 = A0;
-double light1 = 0;
+int vreader1 = A1;
+double normal_light1 = 0;
+double cur_light1 = 0;
 bool light1_purple = false;
 int vreader2 = A2;
-double light2 = 0;
+double normal_light2 = 0;
+double cur_light2 = 0;
 bool light2_purple = false;
+int vreader3 = A3;
+double normal_light3 = 0;
+double cur_light3 = 0;
+bool light3_purple = false;
 
 // light calibration values
-double purple = 600;
-double normal_light_conditions = 800;
+double purple = 50;
 
 // flashing LED related settings
 int led = 10;
@@ -34,35 +42,60 @@ bool currentButton = LOW;
 void setup() {
   pinMode(led, OUTPUT);
   Serial.begin(9600);
+  normal_light1 = analogRead(vreader1);
+  normal_light2 = analogRead(vreader2);
+  normal_light3 = analogRead(vreader3);
   
 }
 
 void loop() {
+  unsigned long current_serial = millis();
   // take photoresistor reading (to be replaced with colour sensor)
-  light1 = analogRead(vreader1);
-  light2 = analogRead(vreader2);
-  Serial.print(light1);
-  Serial.print('\t');
-  Serial.print(light2);
-  Serial.println();
+  cur_light1 = analogRead(vreader1);
+  cur_light2 = analogRead(vreader2);
+  cur_light3 = analogRead(vreader3);
+ 
+  
+  
+  light1_purple =  colour_detector(abs(cur_light1-normal_light1));
+  light2_purple = colour_detector(abs(cur_light2-normal_light2));
+  light3_purple = colour_detector(abs(cur_light3-normal_light3));
 
-  light1_purple =  colour_detector(light1);
-  light2_purple = colour_detector(light2);
+  
+  if(current_serial - previous_serial > 1000)
+  {
+    Serial.print(cur_light1);
+    Serial.print('\t');
+    Serial.print(cur_light2);
+    Serial.print('\t');
+    Serial.print(cur_light3);
+    Serial.println();
+    
+    Serial.print(light1_purple);
+    Serial.print('\t');
+    Serial.print(light2_purple);
+    Serial.print('\t');
+    Serial.print(light3_purple);
+    Serial.println();
+
+    previous_serial = current_serial;
+  }
+  
+
   // MODE 1: 1/2 Depletion --> Turn LED on
   if(light1_purple)
   {
     digitalWrite(led, true);
   }
-  
   // MODE 2: 2/3 depletion --> Flash LED
   // Commenting out for now because we only have 2 photoresistors LOL
-//  else if(light1 > 300 & light1 < 400)
-//  {
-//    pulse = true;
-//    digitalWrite(led, true);
-//  }
-  // MODE 3: 100 % Depletion --> Flash LED & alarm  
   if(light2_purple)
+  {
+    pulse = true;
+    digitalWrite(led, true);
+  }
+  // MODE 3: 100 % Depletion --> Flash LED & alarm  
+  if(light3_purple)
   {
     pulse = true;
     soundon = true;
@@ -104,14 +137,14 @@ bool play(boolean soundon, boolean pulse, boolean led_on){
 
     // the note's duration + 30% seems to work well:
 
-    int pauseBetweenNotes = noteDuration * 1.30;
+    int pauseBetweenNotes = noteDuration * 2.0;
     
     if ((unsigned long)(currentMillis - previousMillisPlay) >= pauseBetweenNotes) {
       led_on = !led_on;
       if(soundon)
-    {
-      tone(speaker, pitch, noteDuration);
-    }
+      {
+        tone(speaker, pitch, noteDuration);
+      }
 
       previousMillisPlay = currentMillis;
     }
@@ -137,5 +170,5 @@ bool debounce(boolean last) {
 
 bool colour_detector(double light) {
   // Return true if reading is purple
-  return light > purple & light < normal_light_conditions;
+  return light > purple;
 }
