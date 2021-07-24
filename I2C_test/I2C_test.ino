@@ -9,6 +9,7 @@
 
 // Include Arduino Wire library for I2C
 #include <Wire.h>
+#include "file.h"
 
 // Define Slave I2C Address
 #define SLAVE_ADDR 9

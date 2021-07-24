@@ -67,5 +67,5 @@ void loop() {
   // Printing the BLUE (B) value 
   Serial.print(" B = ");
   Serial.println(blueFrequency);
-  delay(100);
+  delay(2000);
 }

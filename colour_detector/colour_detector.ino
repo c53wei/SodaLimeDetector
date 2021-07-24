@@ -48,7 +48,7 @@ void loop() {
   // Remaping the value of the RED (R) frequency from 0 to 255
   // You must replace with your own values. Here's an example: 
   // redColor = map(redFrequency, 70, 120, 255,0);
-  redColor = map(redFrequency, XX, XX, 255,0);
+  redColor = map(redFrequency, 160, 300, 255,0);
   
   // Printing the RED (R) value
   Serial.print("R = ");
@@ -64,7 +64,7 @@ void loop() {
   // Remaping the value of the GREEN (G) frequency from 0 to 255
   // You must replace with your own values. Here's an example: 
   // greenColor = map(greenFrequency, 100, 199, 255, 0);
-  greenColor = map(greenFrequency, XX, XX, 255, 0);
+  greenColor = map(greenFrequency, 170, 350, 255, 0);
   
   // Printing the GREEN (G) value  
   Serial.print(" G = ");
@@ -80,7 +80,7 @@ void loop() {
   // Remaping the value of the BLUE (B) frequency from 0 to 255
   // You must replace with your own values. Here's an example: 
   // blueColor = map(blueFrequency, 38, 84, 255, 0);
-  blueColor = map(blueFrequency, XX, XX, 255, 0);
+  blueColor = map(blueFrequency, 240, 350, 255, 0);
   
   // Printing the BLUE (B) value 
   Serial.print(" B = ");
