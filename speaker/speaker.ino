@@ -1,27 +1,37 @@
+#include <Wire.h>
+#include <foo.h>
 #include "pitches.h"
-#include "foo.h"
+
+// Define Slave I2C Address
+#define SLAVE_ADDR 9
+// Define Slave answer size
+#define ANSWERSIZE 5
+
+// Define colour sensor pins
+#define S0 4
+#define S1 5
+#define S2 6
+#define S3 7
+#define sensorOut 8
 
 // Timer controllor for sound playing
 unsigned long previousMillisPlay=0;
 // Timer controller for serial display
 unsigned long previous_serial = 0;
 
-// photoresistor (colour sensor stub) 
-int vreader1 = A1;
-double normal_light1 = 0;
-double cur_light1 = 0;
-bool light1_purple = false;
-int vreader2 = A2;
-double normal_light2 = 0;
-double cur_light2 = 0;
-bool light2_purple = false;
-int vreader3 = A3;
-double normal_light3 = 0;
-double cur_light3 = 0;
-bool light3_purple = false;
+// colour sensor reading declarations
+int redFrequency = 0;
+int greenFrequency = 0;
+int blueFrequency = 0;
 
-// light calibration values
-double purple = 50;
+int setupred = 0;
+int setupgreen = 0;
+int setupblue = 0;
+
+// colour sensor output declaration
+bool light1_purple = false;
+bool light2_purple = false;
+bool light3_purple = false;
 
 // flashing LED related settings
 int led = 10;
@@ -41,50 +51,70 @@ bool currentButton = LOW;
 
 
 void setup() {
+  // Initialize I2C communications as Master
+  Wire.begin();
+  
   pinMode(led, OUTPUT);
   Serial.begin(9600);
-  normal_light1 = analogRead(vreader1);
-  normal_light2 = analogRead(vreader2);
-  normal_light3 = analogRead(vreader3);
-  
 }
 
 void loop() {
   unsigned long current_serial = millis();
-  // take photoresistor reading (to be replaced with colour sensor)
-  cur_light1 = analogRead(vreader1);
-  cur_light2 = analogRead(vreader2);
-  cur_light3 = analogRead(vreader3);
- 
-  light1_purple =  colour_detector(abs(cur_light1-normal_light1));
-  light2_purple = colour_detector(abs(cur_light2-normal_light2));
-  light3_purple = colour_detector(abs(cur_light3-normal_light3));
 
+  // Write a charactre to the Slave
+  Wire.beginTransmission(SLAVE_ADDR);
+  Wire.write(0);
+  Wire.endTransmission();
+
+   // Read response from Slave
+  // Read back 5 characters
+  Wire.requestFrom(SLAVE_ADDR,ANSWERSIZE);
+  // Add characters to string
+  String response = "";
+  while (Wire.available()) {
+      char b = Wire.read();
+      response += b;
+  } 
+  light1_purple = (bool)String(response.charAt(0)).toInt();
+  light2_purple = (bool)String(response.charAt(1)).toInt();
+
+  // Check colour sensor #3
+  redFrequency = pulseIn(sensorOut, LOW);
+
+  greenFrequency = pulseIn(sensorOut, LOW);
+
+  blueFrequency = pulseIn(sensorOut, LOW);
   
+  light3_purple = colour_detector(setupred, setupgreen, setupblue, redFrequency, greenFrequency, blueFrequency);
+Serial.print(" R = ");
+  Serial.println(redFrequency);
+
+  Serial.print(" G = ");
+  Serial.println(greenFrequency);
+
+  Serial.print(" B = ");
+  Serial.println(blueFrequency);
   if(current_serial - previous_serial > 1000)
   {
     print_results_sensor(current_serial);
   }
   
-
   // MODE 1: 1/2 Depletion --> Turn LED on
-  if(light1_purple)
-  {
-    digitalWrite(led, true);
-  }
-  // MODE 2: 2/3 depletion --> Flash LED
-  // Commenting out for now because we only have 2 photoresistors LOL
-  if(light2_purple)
-  {
-    pulse = true;
-
-  }
-  // MODE 3: 100 % Depletion --> Flash LED & alarm  
-  if(light3_purple)
-  {
-    pulse = true;
-    soundon = true;
-  }
+//  if(light1_purple)
+//  {
+//    digitalWrite(led, true);
+//  }
+//  // MODE 2: 2/3 depletion --> Flash LED
+//  if(light2_purple)
+//  {
+//    pulse = true;
+//  }
+//  // MODE 3: 100 % Depletion --> Flash LED & alarm  
+//  if(light3_purple)
+//  {
+//    pulse = true;
+//    soundon = true;
+//  }
   // Debounce button
   currentButton = debounce(lastButton);
   // Revert to MODE 0: Everything off if button pressed
@@ -155,12 +185,6 @@ bool debounce(boolean last) {
 
 
 bool print_results_sensor(long current_serial) {
-  Serial.print(cur_light1);
-    Serial.print('\t');
-    Serial.print(cur_light2);
-    Serial.print('\t');
-    Serial.print(cur_light3);
-    Serial.println();
     
     Serial.print(light1_purple);
     Serial.print('\t');
