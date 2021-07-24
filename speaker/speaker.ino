@@ -3,8 +3,16 @@
 unsigned long previousMillisPlay=0;
 
 // photoresistor (colour sensor stub) 
-int vreader = A0;
-double light = 0;
+int vreader1 = A0;
+double light1 = 0;
+bool light1_purple = false;
+int vreader2 = A2;
+double light2 = 0;
+bool light2_purple = false;
+
+// light calibration values
+double purple = 600;
+double normal_light_conditions = 800;
 
 // flashing LED related settings
 int led = 10;
@@ -31,21 +39,30 @@ void setup() {
 
 void loop() {
   // take photoresistor reading (to be replaced with colour sensor)
-  light = analogRead(vreader);
-  Serial.println(light);
+  light1 = analogRead(vreader1);
+  light2 = analogRead(vreader2);
+  Serial.print(light1);
+  Serial.print('\t');
+  Serial.print(light2);
+  Serial.println();
+
+  light1_purple =  colour_detector(light1);
+  light2_purple = colour_detector(light2);
   // MODE 1: 1/2 Depletion --> Turn LED on
-  if(light > 400 & light < 500)
+  if(light1_purple)
   {
     digitalWrite(led, true);
   }
+  
   // MODE 2: 2/3 depletion --> Flash LED
-  else if(light > 300 & light < 400)
-  {
-    pulse = true;
-    digitalWrite(led, true);
-  }
+  // Commenting out for now because we only have 2 photoresistors LOL
+//  else if(light1 > 300 & light1 < 400)
+//  {
+//    pulse = true;
+//    digitalWrite(led, true);
+//  }
   // MODE 3: 100 % Depletion --> Flash LED & alarm  
-  else if(light < 300)
+  if(light2_purple)
   {
     pulse = true;
     soundon = true;
@@ -61,11 +78,11 @@ void loop() {
   }
   lastButton = currentButton;
   // Execute mode actions configured above
-
-  led_on = play(soundon, pulse, led_on);
-
   // Only applicable for MODE 2 & 3
   // Controls LED flashing
+  led_on = play(soundon, pulse, led_on);
+
+
 }
 
 
@@ -108,7 +125,7 @@ bool play(boolean soundon, boolean pulse, boolean led_on){
 }}
 
 
-boolean debounce(boolean last) {
+bool debounce(boolean last) {
   bool current = digitalRead(button);
   if (last != current) {
     delay(5);
@@ -116,4 +133,9 @@ boolean debounce(boolean last) {
   }
   return current;
   
+}
+
+bool colour_detector(double light) {
+  // Return true if reading is purple
+  return light > purple & light < normal_light_conditions;
 }
