@@ -82,8 +82,19 @@ void setup() {
   pinMode(sensorOut, INPUT);
 
   digitalWrite(S0,HIGH);
-  digitalWrite(S1, HIGH);
-  digitalWrite(S2, HIGH);
+  digitalWrite(S1,LOW);
+
+  digitalWrite(S2,LOW);
+  digitalWrite(S3,LOW);
+  setupred = pulseIn(sensorOut, LOW);
+
+  digitalWrite(S2,HIGH);
+  digitalWrite(S3,HIGH);
+  setupgreen = pulseIn(sensorOut, LOW);
+
+  digitalWrite(S2,LOW);
+  digitalWrite(S3,HIGH);
+  setupblue = pulseIn(sensorOut, LOW);
 
   pinMode(Sz, OUTPUT);
   pinMode(Sx, OUTPUT);
@@ -94,8 +105,19 @@ void setup() {
   pinMode(sensoro, INPUT);
 
   digitalWrite(Sz,HIGH);
-  digitalWrite(Sx, HIGH);
-  digitalWrite(Sy, HIGH);
+  digitalWrite(Sx,LOW);
+
+  digitalWrite(Sy,LOW);
+  digitalWrite(Si,LOW);
+  setupred1 = pulseIn(sensoro, LOW);
+
+  digitalWrite(Sy,HIGH);
+  digitalWrite(Si,HIGH);
+  setupgreen1 = pulseIn(sensoro, LOW);
+
+  digitalWrite(Sy,LOW);
+  digitalWrite(Si,HIGH);
+  setupblue1 = pulseIn(sensoro, LOW);
 }
  
 void receiveEvent() {
@@ -130,25 +152,29 @@ void requestEvent() {
 }
  
 void loop() {
- 
-  // Time delay in loop
-  delay(250);
 
+  // Setting RED (R) filtered photodiodes to be read
+  digitalWrite(S2,LOW);
+  digitalWrite(S3,LOW);
+  
+  // Reading the output frequency
   redFrequency = pulseIn(sensorOut, LOW);
-
+  
+  // Setting GREEN (G) filtered photodiodes to be read
+  digitalWrite(S2,HIGH);
+  digitalWrite(S3,HIGH);
+  
+  // Reading the output frequency
   greenFrequency = pulseIn(sensorOut, LOW);
-
+ 
+  // Setting BLUE (B) filtered photodiodes to be read
+  digitalWrite(S2,LOW);
+  digitalWrite(S3,HIGH);
+  
+  // Reading the output frequency
   blueFrequency = pulseIn(sensorOut, LOW);
-
-  Serial.print(" R = ");
-  Serial.println(redFrequency);
-
-  Serial.print(" G = ");
-  Serial.println(greenFrequency);
-
-  Serial.print(" B = ");
-  Serial.println(blueFrequency);
-
+  
+  
   if (colour_detector(setupred, setupgreen, setupblue, redFrequency, greenFrequency, blueFrequency)) 
   {
     answer = "1";
@@ -166,14 +192,26 @@ void loop() {
   blueFrequency1 = pulseIn(sensoro, LOW);
 
 
-  //Serial.print(" R = ");
-  //Serial.println(redFrequency1);
-
-  //Serial.print(" G = ");
-  //Serial.println(greenFrequency1);
-
-  //Serial.print(" B = ");
-  //Serial.println(blueFrequency1);
+// Setting RED (R) filtered photodiodes to be read
+  digitalWrite(Sy,LOW);
+  digitalWrite(Si,LOW);
+  
+  // Reading the output frequency
+  redFrequency1 = pulseIn(sensoro, LOW);
+  
+  // Setting GREEN (G) filtered photodiodes to be read
+  digitalWrite(Sy,HIGH);
+  digitalWrite(Si,HIGH);
+  
+  // Reading the output frequency
+  greenFrequency1 = pulseIn(sensoro, LOW);
+ 
+  // Setting BLUE (B) filtered photodiodes to be read
+  digitalWrite(Sy,LOW);
+  digitalWrite(Si,HIGH);
+  
+  // Reading the output frequency
+  blueFrequency1 = pulseIn(sensoro, LOW);
 
   if (colour_detector(setupred1, setupgreen1, setupblue1, redFrequency1, greenFrequency1, blueFrequency1)) 
   {
