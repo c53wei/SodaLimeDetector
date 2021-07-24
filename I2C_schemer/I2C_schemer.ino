@@ -9,7 +9,6 @@
 
 // Include Arduino Wire library for I2C
 #include <Wire.h>
-#include "file.h"
 
 // Define Slave I2C Address
 #define SLAVE_ADDR 9
@@ -36,7 +35,7 @@ void loop() {
   Wire.write(0);
   Wire.endTransmission();
     
-  Serial.println("baka");
+  Serial.println("Receive data");
   
   // Read response from Slave
   // Read back 5 characters
