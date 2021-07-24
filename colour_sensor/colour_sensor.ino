@@ -1,7 +1,4 @@
-/*********
-  Rui Santos
-  Complete project details at https://randomnerdtutorials.com  
-*********/
+#include <foo.h>
 
 // TCS230 or TCS3200 pins wiring to Arduino
 #define S0 4
@@ -14,6 +11,12 @@
 int redFrequency = 0;
 int greenFrequency = 0;
 int blueFrequency = 0;
+
+int setupred = 0;
+int setupgreen = 0;
+int setupblue = 0;
+
+boolean purple = false;
 
 void setup() {
   // Setting the outputs
@@ -31,6 +34,18 @@ void setup() {
   
    // Begins serial communication 
   Serial.begin(9600);
+
+  digitalWrite(S2,LOW);
+  digitalWrite(S3,LOW);
+  setupred = pulseIn(sensorOut, LOW);
+
+  digitalWrite(S2,HIGH);
+  digitalWrite(S3,HIGH);
+  setupgreen = pulseIn(sensorOut, LOW);
+
+  digitalWrite(S2,LOW);
+  digitalWrite(S3,HIGH);
+  setupblue = pulseIn(sensorOut, LOW);
 }
 void loop() {
   // Setting RED (R) filtered photodiodes to be read
@@ -68,4 +83,9 @@ void loop() {
   Serial.print(" B = ");
   Serial.println(blueFrequency);
   delay(2000);
+
+  if (colour_detector(setupred, setupgreen, setupblue, redFrequency, greenFrequency, blueFrequency)) 
+  {
+    Serial.println("PURPLE");
+  }
 }
