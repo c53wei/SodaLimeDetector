@@ -53,7 +53,30 @@ bool currentButton = LOW;
 void setup() {
   // Initialize I2C communications as Master
   Wire.begin();
+  // Initialize colour sensor reading pins
+  pinMode(S0, OUTPUT);
+  pinMode(S1, OUTPUT);
+  pinMode(S2, OUTPUT);
+  pinMode(S3, OUTPUT);
+  pinMode(sensorOut, INPUT);
+
+
+  digitalWrite(S0,HIGH);
+  digitalWrite(S1,LOW);
+
+  digitalWrite(S2,LOW);
+  digitalWrite(S3,LOW);
+  setupred = pulseIn(sensorOut, LOW);
+
+  digitalWrite(S2,HIGH);
+  digitalWrite(S3,HIGH);
+  setupgreen = pulseIn(sensorOut, LOW);
+
+  digitalWrite(S2,LOW);
+  digitalWrite(S3,HIGH);
+  setupblue = pulseIn(sensorOut, LOW);
   
+  // Initialize alarm reactions
   pinMode(led, OUTPUT);
   Serial.begin(9600);
 }
@@ -78,22 +101,47 @@ void loop() {
   light1_purple = (bool)String(response.charAt(0)).toInt();
   light2_purple = (bool)String(response.charAt(1)).toInt();
 
-  // Check colour sensor #3
+  // Setting RED (R) filtered photodiodes to be read
+  digitalWrite(S2,LOW);
+  digitalWrite(S3,LOW);
+  
+  // Reading the output frequency
   redFrequency = pulseIn(sensorOut, LOW);
-
+  
+   // Printing the RED (R) value
+  Serial.print("R = ");
+  Serial.print(redFrequency);
+  delay(100);
+  
+  // Setting GREEN (G) filtered photodiodes to be read
+  digitalWrite(S2,HIGH);
+  digitalWrite(S3,HIGH);
+  
+  // Reading the output frequency
   greenFrequency = pulseIn(sensorOut, LOW);
-
+  
+  // Printing the GREEN (G) value  
+  Serial.print(" G = ");
+  Serial.print(greenFrequency);
+  delay(100);
+ 
+  // Setting BLUE (B) filtered photodiodes to be read
+  digitalWrite(S2,LOW);
+  digitalWrite(S3,HIGH);
+  
+  // Reading the output frequency
   blueFrequency = pulseIn(sensorOut, LOW);
   
-  light3_purple = colour_detector(setupred, setupgreen, setupblue, redFrequency, greenFrequency, blueFrequency);
-Serial.print(" R = ");
-  Serial.println(redFrequency);
-
-  Serial.print(" G = ");
-  Serial.println(greenFrequency);
-
+  // Printing the BLUE (B) value 
   Serial.print(" B = ");
   Serial.println(blueFrequency);
+  
+  light3_purple = colour_detector(setupred, setupgreen, setupblue, redFrequency, greenFrequency, blueFrequency);
+  if (colour_detector(setupred, setupgreen, setupblue, redFrequency, greenFrequency, blueFrequency)) 
+  {
+    Serial.println("PURPLE");
+  }
+  
   if(current_serial - previous_serial > 1000)
   {
     print_results_sensor(current_serial);
