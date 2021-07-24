@@ -1,4 +1,5 @@
 #include "pitches.h"
+#include "foo.h"
 
 // Timer controllor for sound playing
 unsigned long previousMillisPlay=0;
@@ -152,10 +153,6 @@ bool debounce(boolean last) {
   
 }
 
-bool colour_detector(double light) {
-  // Return true if reading is purple
-  return light > purple;
-}
 
 bool print_results_sensor(long current_serial) {
   Serial.print(cur_light1);
