@@ -34,7 +34,7 @@ bool light2_purple = false;
 bool light3_purple = false;
 
 // flashing LED related settings
-int led = 10;
+int led = 9;
 bool led_on = false;
 bool pulse = false;
 
@@ -156,6 +156,7 @@ void loop() {
   if(light2_purple)
   {
     pulse = true;
+//    Serial.print("light2");
   }
   // MODE 3: 100 % Depletion --> Flash LED & alarm  
   if(light3_purple)
